@@ -23,8 +23,7 @@ jobs:
       - name: Unpack Android project
         run: |
           mkdir -p source
-          unzip -q AdvanceBookingAlert-V3-LiveScan-Source-NEW.zip -d source
-
+          unzip -q SBJCANTAS-Turbo-Logo-Source.zip -d source
       - name: Fix Java and Kotlin versions
         run: |
           cat > source/app/build.gradle.kts <<'EOF'
