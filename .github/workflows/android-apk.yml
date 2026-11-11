@@ -23,7 +23,7 @@ jobs:
       - name: Unpack Android project
         run: |
           mkdir -p source
-          unzip -q SBJCANTAS-TURBO-V4-Source.zip -d source
+unzip -q SBJ-CANTAS-TURBO-V5-DESIGN-REBUILD.zip -d source
       - name: Fix Java and Kotlin versions
         run: |
           cat > source/app/build.gradle.kts <<'EOF'
