@@ -1,6 +1,5 @@
 
-
-name: Build SBJ CANTAS TURBO V5 APK
+name: Build SBJ CANTAS TURBO V6 APK
 
 on:
   workflow_dispatch:
@@ -28,10 +27,22 @@ jobs:
         run: |
           mkdir -p source
           unzip -q SBJ-CANTAS-TURBO-V5-DESIGN-REBUILD.zip -d source
+          echo "Extracted files:"
+          find source -maxdepth 4 -type f | head -60
 
-      - name: Fix Java and Kotlin versions
+      - name: Locate Android project
         run: |
-          cat > source/app/build.gradle.kts <<'EOF'
+          PROJECT_DIR=$(find source -type f -path '*/app/build.gradle.kts' -print -quit | sed 's#/app/build.gradle.kts$##')
+          if [ -z "$PROJECT_DIR" ]; then
+            echo "ERROR: app/build.gradle.kts not found"
+            exit 1
+          fi
+          echo "PROJECT_DIR=$PROJECT_DIR" >> "$GITHUB_ENV"
+          echo "Android project found at: $PROJECT_DIR"
+
+      - name: Configure Java and Kotlin
+        run: |
+          cat > "$PROJECT_DIR/app/build.gradle.kts" <<'EOF'
           plugins {
               id("com.android.application")
               id("org.jetbrains.kotlin.android")
@@ -45,8 +56,8 @@ jobs:
                   applicationId = "com.example.advancebookingalert"
                   minSdk = 26
                   targetSdk = 35
-                  versionCode = 5
-                  versionName = "5.0"
+                  versionCode = 6
+                  versionName = "6.0"
               }
 
               compileOptions {
@@ -66,10 +77,10 @@ jobs:
           EOF
 
       - name: Build APK
-        run: gradle --no-daemon -p source assembleDebug
+        run: gradle --no-daemon -p "$PROJECT_DIR" assembleDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: SBJ-CANTAS-TURBO-V5-APK
-          path: source/app/build/outputs/apk/debug/app-debug.apk
+          name: SBJ-CANTAS-TURBO-V6-APK
+          path: ${{ env.PROJECT_DIR }}/app/build/outputs/apk/debug/app-debug.apk
